@@ -3,8 +3,9 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
-  // final Future<Position> currentLocation = _determinePosition();
+  late final Future<Position> currentLocation = _determinePosition();
+
+  MainScreen({super.key});
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
@@ -24,7 +25,6 @@ class MainScreen extends StatelessWidget {
     } else if (permission == LocationPermission.deniedForever) {
       return Future.error('Location permissions are permanently denied, we cannot request permissions.');
     }
-
     return await Geolocator.getCurrentPosition();
   }
 
@@ -33,12 +33,27 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          NaverMap(
-            options: const NaverMapViewOptions(
-              initialCameraPosition: NCameraPosition(target: NLatLng(37.413294, 126.764166), zoom: 10, bearing: 0, tilt: 0),
-            ),
-            onMapReady: (controller) {
-              print("네이버 맵 로딩됨!");
+          FutureBuilder(
+            future: currentLocation,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                double latitude = snapshot.data!.latitude;
+                double longitude = snapshot.data!.longitude;
+
+                // NLatLng 객체 생성
+                NLatLng nlatLng = NLatLng(latitude, longitude);
+                return NaverMap(
+                  options: NaverMapViewOptions(
+                    initialCameraPosition: NCameraPosition(target: nlatLng, zoom: 10, bearing: 0, tilt: 0),
+                  ),
+                  onMapReady: (controller) {
+                    print("네이버 맵 로딩됨!");
+                  },
+                );
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             },
           ),
           Positioned(
