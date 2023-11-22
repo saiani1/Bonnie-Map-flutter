@@ -22,6 +22,9 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def naverMapApiKey = localProperties.getProperty('naver.map.key')
+
+
 android {
     namespace "com.example.bonniemap"
     compileSdkVersion flutter.compileSdkVersion
@@ -50,6 +53,7 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        manifestPlaceholders["naverMapApiKey"] = naverMapApiKey
     }
 
     buildTypes {
