@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 class MainScreen extends StatelessWidget {
   late final Future<Position> currentLocation = _determinePosition();
+  late final KakaoMapController mapController;
 
   MainScreen({super.key});
 
@@ -34,28 +35,29 @@ class MainScreen extends StatelessWidget {
       body: Stack(
         children: [
           FutureBuilder(
-            future: currentLocation,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                double latitude = snapshot.data!.latitude;
-                double longitude = snapshot.data!.longitude;
+              future: currentLocation,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else if (!snapshot.hasData) {
+                  return const Center(
+                    child: Text('No data available.'),
+                  );
+                } else {
+                  double latitude = snapshot.data!.latitude;
+                  double longitude = snapshot.data!.longitude;
 
-                // NLatLng 객체 생성
-                NLatLng nlatLng = NLatLng(latitude, longitude);
-                return NaverMap(
-                  options: NaverMapViewOptions(
-                    initialCameraPosition: NCameraPosition(target: nlatLng, zoom: 10, bearing: 0, tilt: 0),
-                  ),
-                  onMapReady: (controller) {
-                    print("네이버 맵 로딩됨!");
-                  },
-                );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
+                  return KakaoMap(onMapCreated: ((controller) {
+                    mapController = controller;
+                  }));
+                }
+              }),
           Positioned(
             top: 40,
             left: 20,

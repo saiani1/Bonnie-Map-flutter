@@ -22,8 +22,7 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def naverMapApiKey = localProperties.getProperty('naver.map.key')
-
+def kakaoMapApiKey = localProperties.getProperty('kakao.map.api.key')
 
 android {
     namespace "com.example.bonniemap"
@@ -53,7 +52,7 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        manifestPlaceholders["naverMapApiKey"] = naverMapApiKey
+        manifestPlaceholders["kakaoMapApiKey"] = kakaoMapApiKey
     }
 
     buildTypes {
