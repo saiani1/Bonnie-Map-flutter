@@ -9,10 +9,7 @@ class ApiService {
 
   static Future<MapGeocodeModel> getLocationList() async {
     final url = Uri.parse(baseUrl);
-    final res = await http.get(url, headers: {
-      'X-NCP-APIGW-API-KEY-ID': "n9cmbys95e",
-      'X-NCP-APIGW-API-KEY': "h7Eiw6DpD4RFqA9bhESD1ofPUQZAG5sL6MLZNIbB",
-    });
+    final res = await http.get(url);
     if (res.statusCode == 200) {
       final Map<String, dynamic> location = jsonDecode(res.body);
       return MapGeocodeModel.fromJson(location);

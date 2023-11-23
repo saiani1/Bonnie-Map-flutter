@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
   late final Future<Position> currentLocation = _determinePosition();
+
   late final KakaoMapController mapController;
 
-  MainScreen({super.key});
+  final List<Marker> markers = [];
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
@@ -53,9 +61,19 @@ class MainScreen extends StatelessWidget {
                   double latitude = snapshot.data!.latitude;
                   double longitude = snapshot.data!.longitude;
 
-                  return KakaoMap(onMapCreated: ((controller) {
-                    mapController = controller;
-                  }));
+                  return KakaoMap(
+                    onMapCreated: ((controller) async {
+                      mapController = controller;
+                      markers.add(Marker(
+                        markerId: UniqueKey().toString(),
+                        latLng: await mapController.getCenter(),
+                      ));
+
+                      setState(() {});
+                    }),
+                    markers: markers.toList(),
+                    center: LatLng(35.224128, 128.598794),
+                  );
                 }
               }),
           Positioned(
